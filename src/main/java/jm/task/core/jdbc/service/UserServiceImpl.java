@@ -13,32 +13,26 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl() throws SQLException {
     }
 
-    @Transactional
     public void createUsersTable() {
         users.createUsersTable();
     }
 
-    @Transactional
     public void dropUsersTable() {
         users.dropUsersTable();
     }
 
-    @Transactional
     public void saveUser(String name, String lastName, byte age) {
         users.saveUser(name, lastName, age);
     }
 
-    @Transactional
     public void removeUserById(long id) {
         users.removeUserById(id);
     }
 
-    @Transactional
     public List<User> getAllUsers() {
         return users.getAllUsers();
     }
 
-    @Transactional
     public void cleanUsersTable() {
         users.cleanUsersTable();
     }
