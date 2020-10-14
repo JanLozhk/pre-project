@@ -11,8 +11,9 @@ public class Util {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "admin";
 
-    public Util() throws SQLException {
-        try {
+    //public Util() throws SQLException {
+         //getConnct();
+        /*    try {
             connect = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
             connect.setAutoCommit(false);
@@ -26,11 +27,11 @@ public class Util {
             connect.rollback();
             e.printStackTrace();
             System.out.println("conect error???");
-        }
-    }
+        }*/
+    //}
 
-    public static Connection getConnct() throws SQLException {
-        if (connect.isClosed()) {
+    public static Connection getConnect() throws SQLException {
+        if (connect == null || connect.isClosed()) {
             connect = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             connect.setAutoCommit(false);
             connect.commit();
