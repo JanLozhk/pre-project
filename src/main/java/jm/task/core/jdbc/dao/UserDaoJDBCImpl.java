@@ -9,9 +9,9 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
     Util untilNew = new Util();
-    private Statement statemnt;
+ //   private Statement statemnt;
 
-    public UserDaoJDBCImpl() {
+    public UserDaoJDBCImpl() throws SQLException {
     }
 
     public void createUsersTable() {
@@ -19,46 +19,39 @@ public class UserDaoJDBCImpl implements UserDao {
                 "(id BIGINT(19) not NULL AUTO_INCREMENT, name VARCHAR(70) not NULL, " +
                 "lastname VARCHAR(70) not NULL, age TINYINT, " +
                 "PRIMARY KEY (id))";
-        try {
-            statemnt = untilNew.getConnect().createStatement();
+        try (Connection connct = Util.getConnct();
+                Statement statemnt = connct.createStatement()) {
             statemnt.executeUpdate(sqlCreate);
             System.out.println("Table is added success");
+            connct.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                statemnt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            System.out.println("finally ok");
         }
     }
 
 
     public void dropUsersTable() {
         String sqlDrop = "DROP TABLE new_table";
-            try {
-                statemnt = untilNew.getConnect().createStatement();
-                statemnt.execute(sqlDrop);
-                System.out.println("Table Droped");//    operation(SQLQueryCommand.DROP_USER_TABLE);
-                } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    statemnt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-            }
+        try (Connection conn = Util.getConnct();
+             Statement statemnt = conn.createStatement()) {
+            statemnt.execute(sqlDrop);
+            System.out.println("Table Droped");//
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+ /*       } finally {*/
+        }
     }
 
     public void saveUser(String name, String lastName, byte age) {
         String saveSql = "INSERT new_table (name, lastName, age)" +
-                "VALUES ('"+ name + "', " + "'" + lastName + "', " + age + ")";
-        try {
-            statemnt = untilNew.getConnect().createStatement();
+                "VALUES ('" + name + "', " + "'" + lastName + "', " + age + ")";
+        try (Connection conn = Util.getConnct();
+             Statement statemnt = conn.createStatement()) {
             statemnt.executeUpdate(saveSql);
+            conn.commit();
             System.out.println("User " + name + "added to DBaseSaved");
         } catch (SQLException e) {
 
@@ -69,18 +62,20 @@ public class UserDaoJDBCImpl implements UserDao {
     public void removeUserById(long id) {
         String deleteSql = "DELETE FROM new_table WHERE id = " + id;
 
-        try {
-            statemnt = untilNew.getConnect().createStatement();
+        try (Connection conn = Util.getConnct();
+             Statement statemnt = conn.createStatement()) {
             statemnt.executeUpdate(deleteSql);
             System.out.println("Удален User c id = " + id);
+            conn.commit();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+/*        } finally {
             try {
                 statemnt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }*/
         }
     }
 
@@ -88,8 +83,8 @@ public class UserDaoJDBCImpl implements UserDao {
         List<User> list = new ArrayList<>();
         String sqlSelect = "SELECT name, lastname, age FROM new_table";
 
-        try {
-            statemnt = untilNew.getConnect().createStatement();
+        try (Connection conn = Util.getConnct();
+            Statement statemnt = conn.createStatement()) {
             ResultSet rs = statemnt.executeQuery(sqlSelect);
             while (rs.next()) {
                 User user = new User();
@@ -98,112 +93,35 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setAge(rs.getByte(3));
                 list.add(user);
             }
+            conn.commit();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+ /*       } finally {
             try {
                 statemnt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
         return list;
     }
 
-      public void cleanUsersTable() {
+    public void cleanUsersTable() {
         String truncateSql = "TRUNCATE TABLE new_table";
 
-        try {
-            statemnt = untilNew.getConnect().createStatement();
+        try (Connection conn = Util.getConnct();
+             Statement statemnt = untilNew.getConnct().createStatement()) {
             statemnt.execute(truncateSql);
             System.out.println("Table clear");
+            conn.commit();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+ /*       } finally {
             try {
                 statemnt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
     }
-
-    /*private PreparedStatement getStatement(String sqlQuery) {
-        Connection connection = CONNECTOR.getConnection();
-
-        PreparedStatement statement = null;
-
-        try {
-            statement = connection.prepareStatement(sqlQuery);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        CONNECTOR.putBack(connection);
-        return statement;
-        //return null;
-    }
-*/
-   /* private void operation(String sqlQuery) {
-
-        try (PreparedStatement statement = getStatement(sqlQuery)) {
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-
-
-  /*  private void insertOperation(String sqlQuery, String name,
-                                 String lastName, Byte age) {
-
-        try (PreparedStatement statement = getStatement(sqlQuery)) {
-
-            statement.setString(1, name);
-            statement.setString(2, lastName);
-            statement.setInt(3, age);
-
-            statement.executeUpdate();
-            System.out.println("User c именем - " + name + " добавлен в таблицу");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void deleteOperation(String sqlQuery, long id) {
-
-        try (PreparedStatement statement = getStatement(sqlQuery)) {
-
-            statement.setLong(1, id);
-
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean tableExist() {
-        Connection conect = DriverManager.getConnection();
-        DriverManager.putBack(conect);
-        DatabaseMetaData databaseMetaData = null;
-        try {
-            databaseMetaData = conect.getMetaData();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try (ResultSet rs = databaseMetaData.getTables(null, null,
-                "users.user", null)) {
-
-            if (rs.next() && rs.next() && rs.next()) {
-                return true;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }*/
 }
