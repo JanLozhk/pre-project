@@ -13,9 +13,11 @@ public class Util {
 
     public static Connection getConnect() throws SQLException {
         if (connect == null || connect.isClosed()) {
-            connect = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            connect.setAutoCommit(false);
-            connect.commit();
+            try (Connection connect = DriverManager.getConnection(URL, USERNAME, PASSWORD)){
+                connect.setAutoCommit(false);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return connect;
     }
