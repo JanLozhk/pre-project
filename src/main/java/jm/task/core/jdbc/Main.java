@@ -7,14 +7,16 @@ public class Main {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
     UserServiceImpl UserImpl = new UserServiceImpl();
+
     UserImpl.createUsersTable(); //создать таб.
     UserImpl.saveUser("Dao", "LastDay", (byte) 10);
     UserImpl.saveUser("Lobachevsky", "Mathematic", (byte) 6);
     UserImpl.saveUser("PeaceMaker", "World", (byte) 8);
     UserImpl.saveUser("Java", "FavoriteJava", (byte) 1);
 
+    UserImpl.cleanUsersTable();
     System.out.println(UserImpl.getAllUsers());// output users
-    UserImpl.cleanUsersTable(); // clean
+        // clean
     UserImpl.dropUsersTable(); //del.
     }
 }

@@ -13,8 +13,9 @@ public class Util {
 
     public static Connection getConnect() throws SQLException {
         if (connect == null || connect.isClosed()) {
-            try (Connection connect = DriverManager.getConnection(URL, USERNAME, PASSWORD)){
-                connect.setAutoCommit(false);
+            try {
+                connect = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+//                connect.setAutoCommit(false);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
