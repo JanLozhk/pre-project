@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoJDBCImpl implements UserDao {
+public class UserDaoJDBCImpl extends Util implements UserDao {
  //   Util untilNew = new Util();
     //   private Statement statemnt;
 
@@ -15,11 +15,11 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        String sqlCreate = "CREATE TABLE IF NOT EXISTS new_table " +
+        String sqlCreate = "CREATE TABLE IF NOT EXISTS testshema.new_table " +
                 "(id BIGINT(19) not NULL AUTO_INCREMENT, name VARCHAR(70) not NULL, " +
-                "lastname VARCHAR(70) not NULL, age TINYINT, " +
+                "lastName VARCHAR(70) not NULL, age TINYINT, " +
                 "PRIMARY KEY (id))";
-        try (Connection connct = Util.getConnect()) {
+        try (Connection connct = getConnect()) {
             try (Statement statemnt = connct.createStatement()) {
                 connct.setAutoCommit(false);
                 statemnt.executeUpdate(sqlCreate);
@@ -36,7 +36,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
 
     public void dropUsersTable() {
-        String sqlDrop = "DROP TABLE new_table";
+        String sqlDrop = "DROP TABLE testshema.new_table";
         try (Connection conn = Util.getConnect()) {
             try (Statement statemnt = conn.createStatement()) {
                 conn.setAutoCommit(false);
@@ -55,7 +55,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String saveSql = "INSERT new_table (name, lastName, age)" +
+        String saveSql = "INSERT testshema.new_table (name, lastName, age)" +
                 "VALUES ('" + name + "', " + "'" + lastName + "', " + age + ")";
 
         try (Connection conn = Util.getConnect()) {
@@ -75,7 +75,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
 
     public void removeUserById(long id) {
-        String deleteSql = "DELETE FROM new_table WHERE id = " + id;
+        String deleteSql = "DELETE FROM testshema.new_table WHERE id = " + id;
         try (Connection conn = Util.getConnect()) {
             try (Statement statemnt = conn.createStatement()) {
                 conn.setAutoCommit(false);
@@ -93,7 +93,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
-        String sqlSelect = "SELECT name, lastname, age FROM new_table";
+        String sqlSelect = "SELECT name, lastName, age FROM testshema.new_table";
 
         try (Connection conn = Util.getConnect()) {
             try (Statement statemnt = conn.createStatement()) {
@@ -119,11 +119,11 @@ public class UserDaoJDBCImpl implements UserDao {
         }
 
     public void cleanUsersTable() {
-        String truncateSql = "TRUNCATE TABLE new_table";
+        String cleanUsersTab = "TRUNCATE TABLE testshema.new_table";
         try (Connection conn = Util.getConnect()) {
             conn.setAutoCommit(false);
-            try (Statement statemnt = Util.getConnect().createStatement()) {
-                statemnt.execute(truncateSql);
+            try (Statement statemnt = conn.createStatement()) {
+                statemnt.execute(cleanUsersTab);
                 System.out.println("Table clear");
                 conn.commit();
             } catch (SQLException e) {
@@ -132,7 +132,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 conn.setAutoCommit(true);
             }
         } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
+            e1.printStackTrace();
+        }
     }
 }
